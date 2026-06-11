@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  TEENPRENEUR INCUBATOR PROGRAM — Landing Page
+  Speedspec LLC × Smart Center Berrechid
+═══════════════════════════════════════════════════════════════════════════════
+
+  SETUP — WhatsApp number:
+  In the <script> at the bottom, replace WHATSAPP_NUMBER with your number in
+  international format WITHOUT "+" or spaces (e.g. "212667703270").
+
+  SETUP — Google Sheets lead capture (optional, requires Google Apps Script):
+  1. Create a Google Sheet with headers: name | child_name | child_age | school | phone | timestamp
+  2. In the Sheet: Extensions → Apps Script. Paste:
+
+       function doPost(e) {
+         var d = JSON.parse(e.postData.contents);
+         SpreadsheetApp.getActiveSheet().appendRow(
+           [d.name, d.child_name, d.child_age, d.school, d.phone, d.timestamp]);
+         return ContentService.createTextOutput("OK");
+       }
+
+  3. Deploy → New deployment → Web app → Execute as "Me",
+     Who has access: "Anyone". Copy the Web App URL.
+  4. Paste that URL into GOOGLE_SHEET_WEBHOOK in the <script> below.
+
+  NOTE: A QR scan happens on the parent's phone camera and cannot be detected
+  by this page. The fetch() fires when a visitor taps the WhatsApp button on
+  this page (intent signal). Full lead data is captured in WhatsApp itself.
+═══════════════════════════════════════════════════════════════════════════════
+-->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teenpreneur Incubator Program — Speedspec × Smart Center Berrechid</title>
+<meta name="description" content="برنامج حاضنة رواد الأعمال المراهقين — من عقلية التلقي إلى عقلية الطالب المبادر. Summer Edition 2026, Smart Center Berrechid.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────── RESET & TOKENS ─────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0A2463;
+  --navy-dark:#061741;
+  --gold:#FBBF24;
+  --gold-dark:#D99E06;
+  --white:#FFFFFF;
+  --slate:#1E293B;
+  --light:#F8FAFC;
+  --muted:#64748B;
+  --red-tint:#FEF2F2;  --red:#B91C1C;  --red-border:#FECACA;
+  --green-tint:#F0FDF4;--green:#15803D;--green-border:#BBF7D0;
+  --radius:16px;
+  --shadow:0 4px 24px rgba(10,36,99,.08);
+  --shadow-lg:0 12px 40px rgba(10,36,99,.14);
+  --font:'Cairo','Inter',Arial,sans-serif;
+  --font-en:'Inter','Cairo',Arial,sans-serif;
+}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--font);color:var(--slate);background:var(--white);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+.ltr{direction:ltr;font-family:var(--font-en)}
+.container{width:min(1140px,92%);margin-inline:auto}
+section{padding:96px 0}
+@media(max-width:640px){section{padding:64px 0}}
+
+h1,h2,h3{line-height:1.25;color:var(--navy);font-weight:800}
+.section-title{font-size:clamp(1.7rem,4vw,2.5rem);text-align:center;margin-bottom:14px}
+.section-sub{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 56px;font-size:1.05rem}
+.divider{width:72px;height:4px;background:var(--gold);border-radius:2px;margin:18px auto 26px}
+
+/* ─────────────────────────── NAVBAR ─────────────────────────── */
+.navbar{position:fixed;inset-inline:0;top:0;z-index:1000;background:rgba(6,23,65,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(251,191,36,.18)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px;width:min(1140px,92%);margin-inline:auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-en);direction:ltr}
+.brand .bolt{width:34px;height:34px;border-radius:9px;background:var(--gold);display:grid;place-items:center;font-size:19px;color:var(--navy-dark);font-weight:900}
+.brand .name{color:var(--white);font-weight:800;font-size:.95rem;letter-spacing:.12em}
+.brand .name span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a{color:#CBD5E1;font-size:.92rem;font-weight:600;padding:8px 14px;border-radius:8px;transition:.2s}
+.nav-links a:hover{color:var(--gold);background:rgba(251,191,36,.08)}
+.nav-cta{background:var(--gold)!important;color:var(--navy-dark)!important;font-weight:800!important;margin-inline-start:8px}
+.nav-cta:hover{background:var(--gold-dark)!important}
+.hamburger{display:none;background:none;border:none;cursor:pointer;width:44px;height:44px;border-radius:10px}
+.hamburger span{display:block;width:22px;height:2.5px;background:var(--white);margin:5px auto;border-radius:2px;transition:.3s}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+@media(max-width:880px){
+  .hamburger{display:block}
+  .nav-links{position:fixed;top:68px;inset-inline:0;flex-direction:column;align-items:stretch;gap:0;background:var(--navy-dark);padding:12px 6vw 24px;border-bottom:2px solid var(--gold);transform:translateY(-130%);transition:transform .35s ease;visibility:hidden}
+  .nav-links.show{transform:translateY(0);visibility:visible}
+  .nav-links a{padding:14px 10px;font-size:1.05rem;border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav-cta{text-align:center;margin:14px 0 0;border-bottom:none!important}
+}
+
+/* ─────────────────────────── HERO ─────────────────────────── */
+.hero{background:linear-gradient(165deg,var(--navy) 0%,var(--navy-dark) 100%);color:var(--white);padding:160px 0 110px;position:relative;overflow:hidden;text-align:center}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.hero::before{width:560px;height:560px;border:1px solid rgba(251,191,36,.14);top:-220px;inset-inline-end:-180px}
+.hero::after{width:380px;height:380px;border:1px solid rgba(255,255,255,.07);bottom:-160px;inset-inline-start:-120px}
+.hero .eyebrow{display:inline-block;font-family:var(--font-en);direction:ltr;font-size:.78rem;font-weight:700;letter-spacing:.28em;color:var(--gold);border:1px solid rgba(251,191,36,.4);padding:8px 18px;border-radius:999px;margin-bottom:28px;text-transform:uppercase}
+.hero h1{font-family:var(--font-en);direction:ltr;color:var(--white);font-size:clamp(2.1rem,5.5vw,3.6rem);font-weight:900;letter-spacing:-.01em}
+.hero .subline{font-family:var(--font-en);direction:ltr;color:var(--gold);font-weight:700;font-size:clamp(1rem,2.4vw,1.35rem);margin-top:14px}
+.hero .subline-ar{font-size:clamp(1.05rem,2.6vw,1.45rem);color:#E2E8F0;font-weight:700;margin-top:8px}
+.mission{max-width:680px;margin:42px auto 0;background:rgba(255,255,255,.05);border:1px solid rgba(251,191,36,.3);border-radius:var(--radius);padding:28px 32px;position:relative}
+.mission .label{position:absolute;top:-13px;inset-inline-start:50%;transform:translateX(50%);background:var(--gold);color:var(--navy-dark);font-size:.72rem;font-weight:800;letter-spacing:.2em;padding:4px 16px;border-radius:999px;font-family:var(--font-en);direction:ltr}
+.mission p.en{font-family:var(--font-en);direction:ltr;font-size:1.12rem;font-weight:700;color:var(--white)}
+.mission p.ar{color:var(--gold);font-weight:700;font-size:1.08rem;margin-top:8px}
+.partners{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:42px}
+.badge-partner{font-family:var(--font-en);direction:ltr;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);padding:12px 22px;border-radius:12px;font-weight:800;font-size:.85rem;letter-spacing:.14em;color:var(--white)}
+.badge-partner .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.badge-partner small{display:block;font-weight:600;font-size:.62rem;letter-spacing:.22em;color:#94A3B8}
+.hero .cta-row{margin-top:46px}
+.btn-gold{display:inline-block;background:var(--gold);color:var(--navy-dark);font-weight:800;font-size:1.1rem;padding:17px 44px;border-radius:14px;box-shadow:0 8px 28px rgba(251,191,36,.35);transition:.25s;border:none;cursor:pointer;font-family:var(--font)}
+.btn-gold:hover{background:var(--gold-dark);transform:translateY(-2px);box-shadow:0 12px 34px rgba(251,191,36,.45)}
+.hero .cta-note{margin-top:14px;font-size:.88rem;color:#94A3B8}
+
+/* ─────────────────────────── PROBLEM ─────────────────────────── */
+.problem{background:var(--light)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:18px}
+@media(max-width:780px){.stats{grid-template-columns:1fr}}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:40px 28px;text-align:center;box-shadow:var(--shadow);border-top:4px solid var(--gold);transition:.25s}
+.stat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.stat-card .num{font-family:var(--font-en);direction:ltr;font-size:clamp(2.4rem,5vw,3.2rem);font-weight:900;color:var(--navy);line-height:1}
+.stat-card .num span{color:var(--gold)}
+.stat-card p{margin-top:14px;font-weight:700;color:var(--slate)}
+.source{text-align:center;color:var(--muted);font-size:.85rem;font-family:var(--font-en);direction:ltr;margin-top:10px}
+.pain{max-width:720px;margin:56px auto 0;background:var(--navy);color:var(--white);border-radius:var(--radius);padding:38px 36px;text-align:center;position:relative;box-shadow:var(--shadow-lg)}
+.pain::before{content:"";position:absolute;top:0;inset-inline-start:0;width:100%;height:4px;background:var(--gold);border-radius:var(--radius) var(--radius) 0 0}
+.pain p{font-size:clamp(1.15rem,2.8vw,1.5rem);font-weight:800;line-height:1.9}
+.pain p em{color:var(--gold);font-style:normal}
+
+/* ─────────────────────────── PROGRAM ─────────────────────────── */
+.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:880px){.modules{grid-template-columns:1fr}}
+.module{background:var(--white);border:1px solid #E2E8F0;border-radius:var(--radius);padding:36px 30px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.25s}
+.module:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--gold)}
+.module .tag{font-family:var(--font-en);direction:ltr;display:inline-block;background:var(--navy);color:var(--gold);font-size:.7rem;font-weight:800;letter-spacing:.22em;padding:6px 14px;border-radius:999px;margin-bottom:20px}
+.module h3{font-family:var(--font-en);direction:ltr;text-align:start;font-size:1.3rem;margin-bottom:6px}
+.module .ar-title{color:var(--gold-dark);font-weight:800;font-size:1.05rem;margin-bottom:16px}
+.module .dur{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:700;font-size:.9rem}
+.module .dur::before{content:"";width:22px;height:3px;background:var(--gold);border-radius:2px}
+.module .big-num{position:absolute;bottom:-26px;inset-inline-end:6px;font-family:var(--font-en);font-size:7rem;font-weight:900;color:var(--light);z-index:0;line-height:1}
+.module>*{position:relative;z-index:1}
+.program-meta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:44px}
+.meta-pill{background:var(--navy);color:var(--white);font-weight:700;font-size:.92rem;padding:11px 24px;border-radius:999px}
+.meta-pill b{color:var(--gold)}
+
+/* ─────────────────────────── SCHEDULE ─────────────────────────── */
+.schedule{background:linear-gradient(165deg,var(--navy) 0%,var(--navy-dark) 100%);color:var(--white)}
+.schedule .section-title{color:var(--white)}
+.schedule .section-title span{color:var(--gold)}
+.sched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:980px;margin-inline:auto}
+@media(max-width:880px){.sched-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.sched-grid{grid-template-columns:1fr}}
+.sched-card{background:rgba(255,255,255,.05);border:1px solid rgba(251,191,36,.25);border-radius:var(--radius);padding:30px 22px;text-align:center}
+.sched-card .ico{width:52px;height:52px;margin:0 auto 16px;border-radius:14px;background:var(--gold);display:grid;place-items:center;font-size:24px;color:var(--navy-dark)}
+.sched-card h3{color:var(--gold);font-size:1rem;margin-bottom:8px}
+.sched-card p{font-weight:700;font-size:1.02rem}
+.sched-card small{display:block;color:#94A3B8;font-size:.82rem;margin-top:4px;font-weight:600}
+
+/* ─────────────────────────── OUTCOMES ─────────────────────────── */
+.outcomes-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:920px;margin-inline:auto;align-items:stretch}
+@media(max-width:760px){.outcomes-grid{grid-template-columns:1fr}}
+.outcome-col{border-radius:var(--radius);padding:38px 32px;box-shadow:var(--shadow)}
+.outcome-col.before{background:var(--red-tint);border:1.5px solid var(--red-border)}
+.outcome-col.after{background:var(--green-tint);border:1.5px solid var(--green-border)}
+.outcome-col h3{font-size:1.15rem;display:flex;align-items:center;gap:10px;margin-bottom:24px}
+.outcome-col.before h3{color:var(--red)}
+.outcome-col.after h3{color:var(--green)}
+.outcome-col h3 .chip{font-size:.68rem;font-weight:800;letter-spacing:.16em;padding:4px 12px;border-radius:999px;font-family:var(--font-en);direction:ltr}
+.outcome-col.before .chip{background:var(--red);color:#fff}
+.outcome-col.after .chip{background:var(--green);color:#fff}
+.outcome-col li{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.05rem;padding:11px 0;border-bottom:1px dashed rgba(0,0,0,.08)}
+.outcome-col li:last-child{border-bottom:none}
+.outcome-col .mark{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:900;flex-shrink:0;color:#fff}
+.before .mark{background:var(--red)}
+.after .mark{background:var(--green)}
+.outcome-arrow{text-align:center;margin:26px auto 0;color:var(--gold-dark);font-weight:800;font-size:1rem}
+
+/* ─────────────────────────── ABOUT ─────────────────────────── */
+.about{background:var(--light)}
+.about-card{max-width:760px;margin-inline:auto;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:48px 44px;text-align:center;border-top:5px solid var(--gold)}
+@media(max-width:560px){.about-card{padding:36px 24px}}
+.avatar{width:96px;height:96px;border-radius:50%;background:linear-gradient(165deg,var(--navy),var(--navy-dark));color:var(--gold);display:grid;place-items:center;font-family:var(--font-en);font-size:2rem;font-weight:900;margin:0 auto 22px;border:3px solid var(--gold)}
+.about-card h3{font-family:var(--font-en);direction:ltr;font-size:1.6rem}
+.about-card .role{color:var(--gold-dark);font-weight:800;margin-top:6px;font-size:1.02rem}
+.about-card .role .ltr-inline{direction:ltr;unicode-bidi:embed;font-family:var(--font-en)}
+.cred-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px}
+.cred{font-family:var(--font-en);direction:ltr;background:var(--navy);color:var(--white);font-size:.8rem;font-weight:700;letter-spacing:.04em;padding:9px 18px;border-radius:999px}
+.cred span{color:var(--gold);margin-inline-end:6px}
+
+/* ─────────────────────────── REGISTRATION / QR ─────────────────────────── */
+.register{background:linear-gradient(165deg,var(--navy) 0%,var(--navy-dark) 100%);color:var(--white);text-align:center}
+.register .section-title{color:var(--white)}
+.register .section-title span{color:var(--gold)}
+.qr-wrap{max-width:560px;margin:48px auto 0;background:var(--white);border-radius:24px;padding:44px 32px;box-shadow:0 24px 60px rgba(0,0,0,.35);color:var(--slate)}
+.qr-box{width:236px;height:236px;margin:0 auto;padding:14px;background:var(--white);border:3px solid var(--navy);border-radius:18px;display:grid;place-items:center;position:relative}
+.qr-box::after{content:"WHATSAPP";position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--navy-dark);font-family:var(--font-en);font-size:.66rem;font-weight:900;letter-spacing:.26em;padding:4px 16px;border-radius:999px}
+#qrcode img,#qrcode canvas{margin:0 auto}
+.qr-instruction{margin-top:34px;font-size:1.25rem;font-weight:800;color:var(--navy)}
+.qr-number{font-family:var(--font-en);direction:ltr;margin-top:12px;font-size:1.3rem;font-weight:900;color:var(--navy);letter-spacing:.04em}
+.qr-number small{display:block;font-size:.78rem;color:var(--muted);font-weight:600;letter-spacing:.1em}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;margin-top:24px;background:#16A34A;color:#fff;font-weight:800;font-size:1.05rem;padding:15px 36px;border-radius:14px;transition:.25s;border:none;cursor:pointer;font-family:var(--font)}
+.wa-btn:hover{background:#15803D;transform:translateY(-2px)}
+.wa-btn svg{width:22px;height:22px;flex-shrink:0}
+.qr-hint{margin-top:16px;color:var(--muted);font-size:.85rem}
+.deadline-pill{display:inline-block;margin-top:34px;background:rgba(251,191,36,.14);border:1px solid var(--gold);color:var(--gold);font-weight:800;padding:11px 28px;border-radius:999px;font-size:1rem}
+
+/* ─────────────────────────── FOOTER ─────────────────────────── */
+footer{background:#040F2D;color:#94A3B8;padding:56px 0 36px}
+.foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap}
+.foot-brand .name{font-family:var(--font-en);direction:ltr;color:var(--white);font-weight:900;letter-spacing:.14em;font-size:1.05rem}
+.foot-brand .name span{color:var(--gold)}
+.foot-brand .tagline{font-family:var(--font-en);direction:ltr;color:var(--gold);font-size:.78rem;font-weight:700;letter-spacing:.3em;margin-top:6px;text-transform:uppercase}
+.foot-brand .partner{font-family:var(--font-en);direction:ltr;margin-top:14px;font-size:.85rem;font-weight:600}
+.foot-contact p{font-family:var(--font-en);direction:ltr;font-size:.92rem;margin-bottom:8px;font-weight:600}
+.foot-contact a:hover{color:var(--gold)}
+.foot-contact .lbl{color:var(--gold);font-weight:800;margin-inline-end:8px}
+.copyright{border-top:1px solid rgba(255,255,255,.08);margin-top:40px;padding-top:24px;text-align:center;font-size:.8rem;font-family:var(--font-en);direction:ltr}
+
+/* ─────────────────────────── REVEAL ANIMATION ─────────────────────────── */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="brand">
+      <span class="bolt">⚡</span>
+      <span class="name">SPEED<span>SPEC</span></span>
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="القائمة" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#problem">الواقع</a></li>
+      <li><a href="#program">البرنامج</a></li>
+      <li><a href="#schedule">المواعيد</a></li>
+      <li><a href="#outcomes">النتائج</a></li>
+      <li><a href="#about">المدرّبة</a></li>
+      <li><a href="#register" class="nav-cta">سجّل الآن</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════ 1. HERO ═══════════ -->
+<header class="hero" id="hero">
+  <div class="container">
+    <span class="eyebrow">Summer Edition 2026 · Berrechid</span>
+    <h1>Teenpreneur Incubator Program</h1>
+    <p class="subline">From Passive Learner to the Student Startup</p>
+    <p class="subline-ar">من عقلية التلقي إلى عقلية الطالب المبادر</p>
+
+    <div class="mission">
+      <span class="label">OUR MISSION</span>
+      <p class="en">"To keep the entrepreneurial DNA alive in teens as they grow into adulthood."</p>
+      <p class="ar">الحفاظ على الحمض النووي الريادي في أبنائنا</p>
+    </div>
+
+    <div class="partners">
+      <span class="badge-partner"><span class="dot"></span><span>SPEEDSPEC LLC<small>FUTURE-PROOF EDUCATION</small></span></span>
+      <span class="badge-partner"><span class="dot"></span><span>SMART CENTER<small>BERRECHID</small></span></span>
+    </div>
+
+    <div class="cta-row">
+      <a href="#register" class="btn-gold">سجّل الآن — 13 يونيو</a>
+      <p class="cta-note">مجموعات صغيرة · الأماكن محدودة</p>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ 2. THE PROBLEM ═══════════ -->
+<section class="problem" id="problem">
+  <div class="container">
+    <h2 class="section-title reveal">واقع لا يمكن تجاهله</h2>
+    <div class="divider reveal"></div>
+    <p class="section-sub reveal">العالم يتغير أسرع من المناهج الدراسية. هذه الأرقام تخص جيل أبنائنا مباشرة.</p>
+
+    <div class="stats">
+      <div class="stat-card reveal">
+        <div class="num">92<span>M</span></div>
+        <p>وظيفة ستختفي بحلول 2030</p>
+      </div>
+      <div class="stat-card reveal">
+        <div class="num">22<span>%</span></div>
+        <p>من الوظائف مهددة بالذكاء الاصطناعي</p>
+      </div>
+      <div class="stat-card reveal">
+        <div class="num">39<span>%</span></div>
+        <p>فجوة حادة في المهارات</p>
+      </div>
+    </div>
+    <p class="source reveal">Source: World Economic Forum 2025 &amp; McKinsey</p>
+
+    <div class="pain reveal">
+      <p>ابنك يدرس. يجتاز الامتحانات.<br><em>ولا يعرف إلى أين يتجه.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 3. THE PROGRAM ═══════════ -->
+<section id="program">
+  <div class="container">
+    <h2 class="section-title reveal ltr" style="text-align:center">Teenpreneur Incubator Framework</h2>
+    <div class="divider reveal"></div>
+    <p class="section-sub reveal">رحلة من ثلاث مراحل تنقل المراهق من التلقي إلى المبادرة وبناء مشروعه الأول.</p>
+
+    <div class="modules">
+      <div class="module reveal">
+        <span class="tag">MODULE 01</span>
+        <h3>Self Discovery</h3>
+        <p class="ar-title">اكتشاف الذات</p>
+        <p class="dur">أسبوع واحد</p>
+        <span class="big-num">01</span>
+      </div>
+      <div class="module reveal">
+        <span class="tag">MODULE 02</span>
+        <h3>AI as Co-Founder</h3>
+        <p class="ar-title">الذكاء الاصطناعي شريكاً</p>
+        <p class="dur">أسبوعان</p>
+        <span class="big-num">02</span>
+      </div>
+      <div class="module reveal">
+        <span class="tag">MODULE 03</span>
+        <h3>Startup of You</h3>
+        <p class="ar-title">إطلاق مشروعك الشخصي</p>
+        <p class="dur">أسبوع واحد</p>
+        <span class="big-num">03</span>
+      </div>
+    </div>
+
+    <div class="program-meta reveal">
+      <span class="meta-pill"><b>12</b> حصة تدريبية</span>
+      <span class="meta-pill">مجموعات <b>صغيرة</b></span>
+      <span class="meta-pill">تأطير <b>ثنائي اللغة</b> عربي / إنجليزي</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 4. SCHEDULE ═══════════ -->
+<section class="schedule" id="schedule">
+  <div class="container">
+    <h2 class="section-title reveal ltr" style="text-align:center">Summer <span>Edition 2026</span></h2>
+    <div class="divider reveal"></div>
+    <p class="section-sub reveal" style="color:#94A3B8">برنامج صيفي مكثّف، مصمم ليناسب عطلة أبنائكم.</p>
+
+    <div class="sched-grid">
+      <div class="sched-card reveal">
+        <div class="ico">📅</div>
+        <h3>أيام الحصص</h3>
+        <p>الثلاثاء · الأربعاء · الخميس</p>
+        <small class="ltr">Tue / Wed / Thu</small>
+      </div>
+      <div class="sched-card reveal">
+        <div class="ico">⏰</div>
+        <h3>التوقيت</h3>
+        <p class="ltr">9:00 AM – 1:00 PM</p>
+        <small>+ استراحة قهوة</small>
+      </div>
+      <div class="sched-card reveal">
+        <div class="ico">📆</div>
+        <h3>المدة الإجمالية</h3>
+        <p>4 أسابيع</p>
+        <small class="ltr">12 sessions</small>
+      </div>
+      <div class="sched-card reveal">
+        <div class="ico">📍</div>
+        <h3>المكان</h3>
+        <p class="ltr">Smart Center</p>
+        <small>برشيد — Berrechid</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 5. OUTCOMES ═══════════ -->
+<section id="outcomes">
+  <div class="container">
+    <h2 class="section-title reveal">التحول الذي سيعيشه ابنك</h2>
+    <div class="divider reveal"></div>
+    <p class="section-sub reveal">قبل البرنامج وبعده — الفرق واضح.</p>
+
+    <div class="outcomes-grid">
+      <div class="outcome-col before reveal">
+        <h3><span class="chip">BEFORE</span> قبل البرنامج</h3>
+        <ul>
+          <li><span class="mark">✕</span> مُتشتت</li>
+          <li><span class="mark">✕</span> مُرهق</li>
+          <li><span class="mark">✕</span> لا يرى هدفاً</li>
+          <li><span class="mark">✕</span> يُضيّع وقته</li>
+        </ul>
+      </div>
+      <div class="outcome-col after reveal">
+        <h3><span class="chip">AFTER</span> بعد البرنامج</h3>
+        <ul>
+          <li><span class="mark">✓</span> مبادر</li>
+          <li><span class="mark">✓</span> يتعلم ذاتياً</li>
+          <li><span class="mark">✓</span> واضح في ما يريد</li>
+          <li><span class="mark">✓</span> يخطط لوقته</li>
+        </ul>
+      </div>
+    </div>
+    <p class="outcome-arrow reveal">⚡ 4 أسابيع تصنع الفرق</p>
+  </div>
+</section>
+
+<!-- ═══════════ 6. ABOUT ═══════════ -->
+<section class="about" id="about">
+  <div class="container">
+    <h2 class="section-title reveal">المشرفة على البرنامج</h2>
+    <div class="divider reveal"></div>
+
+    <div class="about-card reveal">
+      <div class="avatar">CJ</div>
+      <h3>Chaimaa Jaija</h3>
+      <p class="role">مهندسة دولة — <span class="ltr-inline">State Engineer, ENSMR Rabat</span></p>
+      <div class="cred-badges">
+        <span class="cred"><span>◆</span>Ex-JESA / OCP</span>
+        <span class="cred"><span>◆</span>AI Automation Specialist</span>
+        <span class="cred"><span>◆</span>Speedspec Education Founder</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 7. WHATSAPP QR REGISTRATION ═══════════ -->
+<section class="register" id="register">
+  <div class="container">
+    <h2 class="section-title reveal">سجّل الآن — <span>انطلاقة 13 يونيو</span></h2>
+    <div class="divider reveal"></div>
+    <p class="section-sub reveal" style="color:#94A3B8">التسجيل يتم مباشرة عبر واتساب — بدون استمارات معقدة.</p>
+
+    <div class="qr-wrap reveal">
+      <div class="qr-box"><div id="qrcode"></div></div>
+      <p class="qr-instruction">امسح الكود وسجّل مباشرة عبر واتساب</p>
+      <p class="qr-number" id="waNumberDisplay">+212 XX XXX XXXX<small>WHATSAPP</small></p>
+      <button class="wa-btn" id="waBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.89 1.22 3.09.15.2 2.11 3.22 5.1 4.51.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.42 9.42 0 0 1-1.44-5.03c0-5.21 4.24-9.44 9.46-9.44a9.4 9.4 0 0 1 6.68 2.77 9.38 9.38 0 0 1 2.77 6.68c0 5.21-4.25 9.43-9.5 9.43zm8.05-17.47A11.32 11.32 0 0 0 12.04.6C5.76.6.65 5.71.64 11.99c0 2.01.52 3.97 1.52 5.7L.55 23.4l5.84-1.53a11.37 11.37 0 0 0 5.64 1.5h.01c6.28 0 11.39-5.11 11.4-11.4 0-3.04-1.19-5.9-3.35-8.05z"/></svg>
+        أو اضغط هنا للتسجيل عبر واتساب
+      </button>
+      <p class="qr-hint">سيُفتح واتساب برسالة جاهزة — أكمل معلوماتك وأرسلها فقط.</p>
+    </div>
+
+    <span class="deadline-pill reveal">⏳ آخر أجل للتسجيل: 13 يونيو 2026</span>
+  </div>
+</section>
+
+<!-- ═══════════ 8. FOOTER ═══════════ -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <p class="name">⚡ SPEED<span>SPEC</span> LLC</p>
+        <p class="tagline">Future-Proof Education</p>
+        <p class="partner">× SMART CENTER BERRECHID</p>
+      </div>
+      <div class="foot-contact">
+        <p><span class="lbl">EMAIL</span><a href="mailto:speedspec232@gmail.com">speedspec232@gmail.com</a></p>
+        <p><span class="lbl">PHONE</span><a href="tel:+212667703270">+212 667-703270</a></p>
+        <p><span class="lbl">LOCATION</span>Smart Center, Berrechid — Morocco</p>
+      </div>
+    </div>
+    <p class="copyright">© 2026 Speedspec LLC × Smart Center Berrechid — Teenpreneur Incubator Program. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ═══════════════════ CONFIG ═══════════════════ */
+// WhatsApp number — international format, digits only (no "+", no spaces).
+// Change this if registration uses a different number.
+const WHATSAPP_NUMBER = "212667703270";
+
+// TODO: Replace with your Google Apps Script Web App URL (see README comment at top of file)
+const GOOGLE_SHEET_WEBHOOK = "YOUR_APPS_SCRIPT_URL_HERE";
+
+/* ═══════════════════ WHATSAPP LINK + QR ═══════════════════ */
+const WA_MESSAGE =
+  "مرحباً، أود التسجيل في برنامج Teenpreneur Incubator Program\n" +
+  "اسمي: \n" +
+  "اسم الطفل: \n" +
+  "عمر الطفل: \n" +
+  "المدرسة: ";
+
+const waLink = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(WA_MESSAGE);
+
+// Render QR code (client-side, qrcode.js)
+(function renderQR() {
+  const el = document.getElementById("qrcode");
+  if (typeof QRCode !== "undefined") {
+    new QRCode(el, {
+      text: waLink,
+      width: 200,
+      height: 200,
+      colorDark: "#0A2463",
+      colorLight: "#FFFFFF",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else {
+    // Offline fallback: CDN unavailable → show a tappable link instead
+    el.innerHTML = '<a href="' + waLink + '" style="color:#0A2463;font-weight:800;word-break:break-all;font-size:.8rem">' + waLink + "</a>";
+  }
+})();
+
+// Display number nicely under the QR
+(function showNumber() {
+  const d = document.getElementById("waNumberDisplay");
+  const formatted = "+" + WHATSAPP_NUMBER.replace(/^(\d{3})(\d{3})(\d{3})(\d+)$/, "$1 $2-$3$4");
+  d.firstChild.textContent = WHATSAPP_NUMBER.includes("X") ? "+212 XX XXX XXXX" : formatted;
+})();
+
+/* ═══════════════════ GOOGLE SHEETS LEAD CAPTURE ═══════════════════ */
+// NOTE: An actual QR scan happens on the parent's phone camera and cannot be
+// detected by this page. This fires when the visitor taps the WhatsApp button
+// here (registration-intent signal). Only works once the webhook is configured.
+function logRegistrationIntent() {
+  if (GOOGLE_SHEET_WEBHOOK === "YOUR_APPS_SCRIPT_URL_HERE") return; // not configured yet
+  fetch(GOOGLE_SHEET_WEBHOOK, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      name: "",          // filled in by parent inside WhatsApp
+      child_name: "",
+      child_age: "",
+      school: "",
+      phone: WHATSAPP_NUMBER,
+      timestamp: new Date().toISOString()
+    })
+  }).catch(function () { /* silent — lead capture is best-effort */ });
+}
+
+document.getElementById("waBtn").addEventListener("click", function () {
+  logRegistrationIntent();
+  window.open(waLink, "_blank");
+});
+
+/* ═══════════════════ MOBILE NAV (HAMBURGER) ═══════════════════ */
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+
+hamburger.addEventListener("click", function () {
+  const open = navLinks.classList.toggle("show");
+  hamburger.classList.toggle("open", open);
+  hamburger.setAttribute("aria-expanded", open);
+});
+
+// Close menu when a link is tapped
+navLinks.querySelectorAll("a").forEach(function (a) {
+  a.addEventListener("click", function () {
+    navLinks.classList.remove("show");
+    hamburger.classList.remove("open");
+    hamburger.setAttribute("aria-expanded", "false");
+  });
+});
+
+/* ═══════════════════ SCROLL REVEAL ═══════════════════ */
+const io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (e.isIntersecting) {
+      e.target.classList.add("visible");
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+</script>
+</body>
+</html>
